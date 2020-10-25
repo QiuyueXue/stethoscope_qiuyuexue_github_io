@@ -73,7 +73,7 @@
       var gainNode = audioCtx.createGain();
       biquadFilter.type = "lowpass";
       biquadFilter.frequency.value = 200;
-      // biquadFilter.Q.value = 2;
+      biquadFilter.Q.value = 2;
       gainNode.gain.value = 50;
 
       analyser.fftSize = 32768;
