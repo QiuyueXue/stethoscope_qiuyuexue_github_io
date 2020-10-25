@@ -1,0 +1,170 @@
+# QiuyueXue.github.io
+
+<!DOCTYPE html>
+  <head>
+    <title>Home Stethoscope</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/> 
+    <link rel="stylesheet" href="css/simple-grid.min.css">
+    <style>
+      #graphs {
+        line-height: 0;
+        background-color: black;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <h1>Home Stethoscope</h1>
+          </div>
+        </div>
+      <div class="row">
+        <div class="col-12">
+          <button onclick="start()">Start</button>
+        </div>
+      </div>
+      <div class="row">
+        <div id="graphs" class="col-9">
+          <canvas id="amplitude-graph"></canvas>
+          <canvas id="frequency-graph"></canvas>
+        </div>
+        <div class="col-3">
+          Text can go here hihi
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+    // mostly from: https://github.com/mdn/voice-change-o-matic/blob/gh-pages/scripts/app.js#L123-L167
+    function start() {
+      // Older browsers might not implement mediaDevices at all, so we set an empty object first
+      if (navigator.mediaDevices === undefined) {
+        navigator.mediaDevices = {};
+      }
+
+      // Some browsers partially implement mediaDevices. We can't just assign an object
+      // with getUserMedia as it would overwrite existing properties.
+      // Here, we will just add the getUserMedia property if it's missing.
+      if (navigator.mediaDevices.getUserMedia === undefined) {
+        navigator.mediaDevices.getUserMedia = function(constraints) {
+          // First get ahold of the legacy getUserMedia, if present
+          let getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+          // Some browsers just don't implement it - return a rejected promise with an error
+          // to keep a consistent interface
+          if (!getUserMedia) {
+            return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+          }
+
+          // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+          return new Promise(function(resolve, reject) {
+            getUserMedia.call(navigator, constraints, resolve, reject);
+          });
+        }
+      }
+
+      // set up forked web audio context, for multiple browsers
+      // window. is needed otherwise Safari explodes
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioCtx.createAnalyser();
+      var biquadFilter = audioCtx.createBiquadFilter();
+      var gainNode = audioCtx.createGain();
+      biquadFilter.type = "lowpass";
+      biquadFilter.frequency.value = 200;
+      // biquadFilter.Q.value = 2;
+      gainNode.gain.value = 50;
+
+      analyser.fftSize = 32768;
+      let amplitudeBufferLength = analyser.fftSize;
+      let frequencyBufferLength = analyser.frequencyBinCount;
+      let amplitudeData = new Uint8Array(amplitudeBufferLength);
+      let frequencyData = new Uint8Array(frequencyBufferLength);
+      let source;
+
+      const amplitudeCanvas = document.getElementById('amplitude-graph');
+      amplitudeCanvas.style.width = '100%';
+      amplitudeCanvas.width  = amplitudeCanvas.offsetWidth;
+      const amplitudeCanvasCtx = amplitudeCanvas.getContext('2d');
+      const frequencyCanvas = document.getElementById('frequency-graph');
+      frequencyCanvas.style.width = '100%';
+      frequencyCanvas.width  = frequencyCanvas.offsetWidth;
+      const frequencyCanvasCtx = frequencyCanvas.getContext('2d');
+
+      if (navigator.mediaDevices.getUserMedia) {
+        console.log('getUserMedia supported.');
+        const constraints = {audio: true}
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(
+            function(stream) {
+              source = audioCtx.createMediaStreamSource(stream);
+              source.connect(biquadFilter);
+              biquadFilter.connect(gainNode);
+              gainNode.connect(analyser);
+              draw();
+              analyser.connect(OfflineAudioContext.destination);
+          })
+          .catch( function(err) { console.log('The following gUM error occured: ' + err);})
+      } else {
+        console.log('getUserMedia not supported on your browser!');
+      }
+
+      function draw() {
+        requestAnimationFrame(draw);
+
+        analyser.getByteTimeDomainData(amplitudeData);
+        analyser.getByteFrequencyData(frequencyData);
+
+        drawAmplitudeGraph();
+        drawFrequencyGraph();
+      }
+
+      function drawAmplitudeGraph() {
+        amplitudeCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        amplitudeCanvasCtx.fillRect(0, 0, amplitudeCanvas.width, amplitudeCanvas.height);
+
+        amplitudeCanvasCtx.lineWidth = 2;
+        amplitudeCanvasCtx.strokeStyle = 'rgb(0, 255, 0)';
+        amplitudeCanvasCtx.beginPath();
+
+        const sliceWidth = amplitudeCanvas.width * 1.0 / amplitudeBufferLength;
+        let x = 0;
+        for(let i = 0; i < amplitudeBufferLength; i++) {
+          const v = amplitudeData[i] / 128.0;
+          const y = v * amplitudeCanvas.height/2;
+
+          if(i === 0) {
+            amplitudeCanvasCtx.moveTo(x, y);
+          } else {
+            amplitudeCanvasCtx.lineTo(x, y);
+          }
+
+          x += sliceWidth;
+        }
+
+        amplitudeCanvasCtx.lineTo(amplitudeCanvas.width, amplitudeCanvas.height/2);
+        amplitudeCanvasCtx.stroke();
+      }
+
+      function drawFrequencyGraph() {
+        frequencyCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
+        frequencyCanvasCtx.fillRect(0, 0, frequencyCanvas.width, frequencyCanvas.height);
+
+        const barWidth = (frequencyCanvas.width / frequencyBufferLength) * 2.5;
+        let barHeight;
+        let x = 0;
+
+        for(let i = 0; i < frequencyBufferLength; i++) {
+          barHeight = frequencyData[i];
+
+          frequencyCanvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
+          frequencyCanvasCtx.fillRect(x,frequencyCanvas.height-barHeight/2,barWidth,barHeight/2);
+
+          x += barWidth + 1;
+        }
+      }
+    }
+    </script>
+  </body>
+</html>
