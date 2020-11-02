@@ -76,7 +76,8 @@
       // biquadFilter.type = "lowpass";
       // biquadFilter.frequency.value = 200;
       // biquadFilter.Q.value = 2;
-      gainNode.gain.value = 1E-04;
+//       gainNode.gain.value = 1E-04;
+      gainNode.gain.value = 1E-03;
 
       analyser.fftSize = 32768;
       let amplitudeBufferLength = analyser.fftSize;
@@ -120,7 +121,8 @@
         analyser.getByteTimeDomainData(amplitudeData);
         analyser.getByteFrequencyData(frequencyData);
         max_amplitude = Math.max.apply(Math, amplitudeData);
-        auto_gain = 1E-03/max_amplitude;
+//         auto_gain = 1E-03/max_amplitude;
+        auto_gain = 1E-02/max_amplitude;
         gainNode.gain.value = auto_gain;
 
         drawAmplitudeGraph();
