@@ -3,6 +3,7 @@
     <title>Home Stethoscope</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/> 
     <link rel="stylesheet" href="css/simple-grid.min.css">
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js></script>
     <style>
       #graphs {
         line-height: 0;
@@ -64,22 +65,17 @@
       }
 
       // set up forked web audio context, for multiple browsers
-      // window. is needed otherwise Safari explodes
-      // let feedBack = [5.21587349e-17, 4.69428614e-16, 1.87771446e-15, 4.38133373e-15, 6.57200060e-15, 6.57200060e-15, 4.38133373e-15, 1.87771446e-15, 4.69428614e-16, 5.21587349e-17];
-      // let feedForward = [1., -8.81949375, 34.57221047, -79.0586941, 116.22743487, -113.91956543, 74.4420787, -31.27337555, 7.66424368,-0.83483889];
-
-      // let feedForward = [4.149425E-07, 1.659770E-06, 2.489655E-06, 1.659770E-06, 4.149425E-07];
-      // let feedBack = [3.893453E+00, -5.688233E+00, 3.695783E+00 , -9.010106E-01]; 
+      // window. is needed otherwise Safari explodes 
       let feedForward = [1, 4, 6, 4, 1];
       let feedBack = [1, -3.89515962872624, 5.69093969755989, -3.69623536934508,0.900457760845518];
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const analyser = audioCtx.createAnalyser();
       const iirfilter = audioCtx.createIIRFilter(feedforward=feedForward, feedback=feedBack);
-      var biquadFilter = audioCtx.createBiquadFilter();
+      // var biquadFilter = audioCtx.createBiquadFilter();
       var gainNode = audioCtx.createGain();
-      biquadFilter.type = "lowpass";
-      biquadFilter.frequency.value = 200;
-      biquadFilter.Q.value = 2;
+      // biquadFilter.type = "lowpass";
+      // biquadFilter.frequency.value = 200;
+      // biquadFilter.Q.value = 2;
       gainNode.gain.value = 1E-05;
 
       analyser.fftSize = 32768;
@@ -123,6 +119,9 @@
 
         analyser.getByteTimeDomainData(amplitudeData);
         analyser.getByteFrequencyData(frequencyData);
+        max_amplitude = Math.max.apply(Math, amplitudeData);
+        auto_gain = 1E-03/max_amplitude;
+        gainNode.gain.value = auto_gain;
 
         drawAmplitudeGraph();
         drawFrequencyGraph();
