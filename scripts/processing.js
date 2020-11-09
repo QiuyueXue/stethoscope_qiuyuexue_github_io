@@ -128,8 +128,8 @@ function visualize(stream) {
   let feedBack = [1.0, -8.819493751378667, 34.572210470407306, -79.05869410420424, 116.22743487333808, -113.91956542672197, 74.4420786991709, -31.27337554697834, 7.664243680050063, -0.8348388936831265];
   const iirfilter = audioCtx.createIIRFilter(feedforward=feedForward, feedback=feedBack);
   var gainNode = audioCtx.createGain();
-  gainNode.gain.value = 1;
-  var max_amplification = 5E-01;
+  gainNode.gain.value = 1E03;
+  var max_amplification = 5E03;
 
   analyser.fftSize = 2048;
   let amplitudeBufferLength = analyser.fftSize;
