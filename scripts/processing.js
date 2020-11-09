@@ -122,13 +122,11 @@ function visualize(stream) {
 
   const source = audioCtx.createMediaStreamSource(stream);
   const analyser = audioCtx.createAnalyser();
-  // let feedForward = [1, 4, 6, 4, 1];
-  // let feedBack = [1, -3.89515962872624, 5.69093969755989, -3.69623536934508,0.900457760845518];
-  let feedForward = [1, -6.73657969908110, 18.7019052135687,  -25.6857270386547, 12.7204061032068,  12.7204061032068,  -25.6857270386547, 18.7019052135687,  -6.73657969908110, 1];
-  let feedBack = [1, -8.47303907326204, 31.9224585773865,  -70.1885583959499, 99.2527839138432,  -93.6085979149751, 58.8818759725150,  -23.8200388364248, 5.62337479430330,  -0.590259036953040];
+  let feedForward = [1, 4, 6, 4, 1];
+  let feedBack = [1, -3.89515962872624, 5.69093969755989, -3.69623536934508,0.900457760845518];
   const iirfilter = audioCtx.createIIRFilter(feedforward=feedForward, feedback=feedBack);
   var gainNode = audioCtx.createGain();
-  gainNode.gain.value = 1E-03;
+  gainNode.gain.value = 1E-05;
   var max_amplification = 5E-04;
 
   analyser.fftSize = 2048;
@@ -150,10 +148,9 @@ function visualize(stream) {
   let graphWindowData = new Uint8Array(GRAPH_WINDOW_LENGTH);
   let graphWindowStart = 0;
 
-  // source.connect(iirfilter);
-  // iirfilter.connect(gainNode);
-  // gainNode.connect(analyser);
-  source.connect(analyser);
+  source.connect(iirfilter);
+  iirfilter.connect(gainNode);
+  gainNode.connect(analyser);
   draw();
 
   function draw() {
