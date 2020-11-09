@@ -1,183 +1,34 @@
 <!DOCTYPE html>
+<html lang="en-us">
   <head>
-    <title>Home Stethoscope</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/> 
-    <link rel="stylesheet" href="css/simple-grid.min.css">
-    <style>
-      #graphs {
-        line-height: 0;
-        background-color: black;
-      }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Web dictaphone</title>
+    <link href="styles/app.css" rel="stylesheet" type="text/css">
   </head>
-
   <body>
-    <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <h1>Home Stethoscope</h1>
-          </div>
-        </div>
-      <div class="row">
-        <div class="col-12">
-          <button onclick="start()">Start</button>
-        </div>
-      </div>
-      <div class="row">
-        <div id="graphs" class="col-9">
-          <canvas id="amplitude-graph"></canvas>
-          <canvas id="frequency-graph"></canvas>
-        </div>
+
+      <div class="container">
+      <header>
+        <h1>Home Stethoscope</h1>
+      </header>
+
+      <section class="main-controls">
+        <canvas class="visualizer" height="300px"></canvas>
         <div class="col-3">
           <p>Adjust Amplification</p>
-			<input id="volume" type="range" min="1E-04" max="5E-03" step="1E-04" value="5E-04"/>
+          <input id="volume" type="range" min="1E-04" max="5E-03" step="1E-04" value="5E-04"/>
         </div>
-      </div>
+        <div id="buttons">
+          <button class="record">Record</button>
+          <button class="stop">Stop</button>
+        </div>
+      </section>
+      <section class="sound-clips">
+      </section>
     </div>
 
-    <script type="text/javascript">
-    // mostly from: https://github.com/mdn/voice-change-o-matic/blob/gh-pages/scripts/app.js#L123-L167
-    function start() {
-      // Older browsers might not implement mediaDevices at all, so we set an empty object first
-      if (navigator.mediaDevices === undefined) {
-        navigator.mediaDevices = {};
-      }
+    <script src="scripts/processing.js"></script>
 
-      // Some browsers partially implement mediaDevices. We can't just assign an object
-      // with getUserMedia as it would overwrite existing properties.
-      // Here, we will just add the getUserMedia property if it's missing.
-      if (navigator.mediaDevices.getUserMedia === undefined) {
-        navigator.mediaDevices.getUserMedia = function(constraints) {
-          // First get ahold of the legacy getUserMedia, if present
-          let getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-          // Some browsers just don't implement it - return a rejected promise with an error
-          // to keep a consistent interface
-          if (!getUserMedia) {
-            return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-          }
-
-          // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
-          return new Promise(function(resolve, reject) {
-            getUserMedia.call(navigator, constraints, resolve, reject);
-          });
-        }
-      }
-
-      // set up forked web audio context, for multiple browsers
-      // window. is needed otherwise Safari explodes
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const analyser = audioCtx.createAnalyser();
-      let feedForward = [1, 4, 6, 4, 1];
-      let feedBack = [1, -3.89515962872624, 5.69093969755989, -3.69623536934508,0.900457760845518];
-      const iirfilter = audioCtx.createIIRFilter(feedforward=feedForward, feedback=feedBack);
-      var gainNode = audioCtx.createGain();
-      gainNode.gain.value = 1E-05;
-
-      analyser.fftSize = 2048;
-      let amplitudeBufferLength = analyser.fftSize;
-      let frequencyBufferLength = analyser.frequencyBinCount;
-      let amplitudeData = new Uint8Array(amplitudeBufferLength);
-      let frequencyData = new Uint8Array(frequencyBufferLength);
-      let source;
-
-      const amplitudeCanvas = document.getElementById('amplitude-graph');
-      amplitudeCanvas.style.width = '100%';
-      amplitudeCanvas.width  = amplitudeCanvas.offsetWidth;
-      const amplitudeCanvasCtx = amplitudeCanvas.getContext('2d');
-      const frequencyCanvas = document.getElementById('frequency-graph');
-      frequencyCanvas.style.width = '100%';
-      frequencyCanvas.width  = frequencyCanvas.offsetWidth;
-      const frequencyCanvasCtx = frequencyCanvas.getContext('2d');
-
-      const GRAPH_WINDOW_LENGTH = 120000;
-      let graphWindowData = new Uint8Array(GRAPH_WINDOW_LENGTH);
-      let graphWindowStart = 0;
-
-      if (navigator.mediaDevices.getUserMedia) {
-        console.log('getUserMedia supported.');
-        const constraints = {audio: true}
-        navigator.mediaDevices.getUserMedia(constraints)
-          .then(
-            function(stream) {
-              source = audioCtx.createMediaStreamSource(stream);
-              source.connect(iirfilter);
-              iirfilter.connect(gainNode);
-              gainNode.connect(analyser);
-              draw();
-          })
-          .catch( function(err) { console.log('The following gUM error occured: ' + err);})
-      } else {
-        console.log('getUserMedia not supported on your browser!');
-      }
-
-      function draw() {
-        requestAnimationFrame(draw);
-
-        analyser.getByteTimeDomainData(amplitudeData);
-        analyser.getByteFrequencyData(frequencyData);
-        
-        const offset = GRAPH_WINDOW_LENGTH - graphWindowStart;
-        graphWindowData.set(amplitudeData.slice(0, offset), graphWindowStart);
-        graphWindowData.set(amplitudeData.slice(offset), 0);
-        graphWindowStart = (graphWindowStart + amplitudeBufferLength) % GRAPH_WINDOW_LENGTH;
-
-        drawAmplitudeGraph();
-        drawFrequencyGraph();
-        max_amplitude = Math.max.apply(Math, amplitudeData);
-        document.getElementById('volume').addEventListener('change', function() {
-		    max_amplification = this.value;
-		});
-        auto_gain = max_amplification/max_amplitude;
-        gainNode.gain.value = auto_gain;
-
-      }
-
-      function drawAmplitudeGraph() {
-        amplitudeCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        amplitudeCanvasCtx.fillRect(0, 0, amplitudeCanvas.width, amplitudeCanvas.height);
-
-        amplitudeCanvasCtx.lineWidth = 2;
-        amplitudeCanvasCtx.strokeStyle = 'rgb(0, 255, 0)';
-        amplitudeCanvasCtx.beginPath();
-
-        const sliceWidth = amplitudeCanvas.width * 1.0 / GRAPH_WINDOW_LENGTH;
-        let x = 0;
-        for(let i = 0; i < GRAPH_WINDOW_LENGTH; i++) {
-          const v = graphWindowData[(i + graphWindowStart) % GRAPH_WINDOW_LENGTH] / 128.0;
-          const y = v * amplitudeCanvas.height/2;
-
-          if(i === 0) {
-            amplitudeCanvasCtx.moveTo(x, y);
-          } else {
-            amplitudeCanvasCtx.lineTo(x, y);
-          }
-
-          x += sliceWidth;
-        }
-
-        amplitudeCanvasCtx.lineTo(amplitudeCanvas.width, amplitudeCanvas.height/2);
-        amplitudeCanvasCtx.stroke();
-      }
-
-      function drawFrequencyGraph() {
-        frequencyCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
-        frequencyCanvasCtx.fillRect(0, 0, frequencyCanvas.width, frequencyCanvas.height);
-
-        const barWidth = (frequencyCanvas.width / frequencyBufferLength) * 2.5;
-        let barHeight;
-        let x = 0;
-
-        for(let i = 0; i < frequencyBufferLength; i++) {
-          barHeight = frequencyData[i];
-
-          frequencyCanvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
-          frequencyCanvasCtx.fillRect(x,frequencyCanvas.height-barHeight/2,barWidth,barHeight/2);
-
-          x += barWidth + 1;
-        }
-      }
-    }
-    </script>
   </body>
 </html>
