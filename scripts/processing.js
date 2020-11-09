@@ -150,9 +150,10 @@ function visualize(stream) {
   let graphWindowData = new Uint8Array(GRAPH_WINDOW_LENGTH);
   let graphWindowStart = 0;
 
-  source.connect(iirfilter);
-  iirfilter.connect(gainNode);
-  gainNode.connect(analyser);
+  // source.connect(iirfilter);
+  // iirfilter.connect(gainNode);
+  // gainNode.connect(analyser);
+  source.connect(analyser);
   draw();
 
   function draw() {
