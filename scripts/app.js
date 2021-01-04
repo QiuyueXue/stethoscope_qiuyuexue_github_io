@@ -69,6 +69,19 @@ function visualize(stream) {
   source.connect(iirfilter);
   iirfilter.connect(gainNode);
   gainNode.connect(analyser);
+  rec = new MediaRecorder(gainNode);
+  rec.ondataavailable = e => {
+    audioChunks.push(e.data);
+    if (rec.state == "inactive"){
+      let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
+      recordedAudio.src = URL.createObjectURL(blob);
+      recordedAudio.controls=true;
+      recordedAudio.autoplay=true;
+      audioDownload.href = recordedAudio.src;
+      audioDownload.download = 'myrecording.ogg';
+      audioDownload.innerHTML = 'download';
+    }
+  }
   draw();
 
   function draw() {
@@ -123,21 +136,21 @@ function visualize(stream) {
 function gotStream(stream) {
   window.stream = stream; // make stream available to console
   
-  rec_old = new MediaRecorder(stream);
-  rec = new MediaRecorder(gainNode);
   visualize(stream);
-  rec.ondataavailable = e => {
-    audioChunks.push(e.data);
-    if (rec.state == "inactive"){
-      let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
-      recordedAudio.src = URL.createObjectURL(blob);
-      recordedAudio.controls=true;
-      recordedAudio.autoplay=true;
-      audioDownload.href = recordedAudio.src;
-      audioDownload.download = 'myrecording.ogg';
-      audioDownload.innerHTML = 'download';
-    }
-  }
+  
+  // rec_old = new MediaRecorder(stream);
+  // rec.ondataavailable = e => {
+  //   audioChunks.push(e.data);
+  //   if (rec.state == "inactive"){
+  //     let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
+  //     recordedAudio.src = URL.createObjectURL(blob);
+  //     recordedAudio.controls=true;
+  //     recordedAudio.autoplay=true;
+  //     audioDownload.href = recordedAudio.src;
+  //     audioDownload.download = 'myrecording.ogg';
+  //     audioDownload.innerHTML = 'download';
+  //   }
+  // }
 }
 
 function handleError(error) {
