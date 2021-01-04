@@ -123,7 +123,8 @@ function visualize(stream) {
 function gotStream(stream) {
   window.stream = stream; // make stream available to console
   
-  rec = new MediaRecorder(stream);
+  rec_old = new MediaRecorder(stream);
+  rec = new MediaRecorder(gainNode);
   visualize(stream);
   rec.ondataavailable = e => {
     audioChunks.push(e.data);
