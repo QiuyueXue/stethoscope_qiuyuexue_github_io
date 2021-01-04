@@ -86,7 +86,7 @@ function visualize(stream) {
   //   }
   // }
 
-  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/lib/", encoding: encodingType, numChannels: 2});
+  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/lib/", encoding: "wav", numChannels: 2});
   rec_filtered.onComplete = function(recorder, blob) { 
       __log("Encoding complete");
       createDownloadLink(blob,recorder.encoding)
