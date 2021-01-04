@@ -69,10 +69,10 @@ function visualize(stream) {
   source.connect(iirfilter);
   iirfilter.connect(gainNode);
   gainNode.connect(analyser);
-  rec = new MediaRecorder(stream);
-  rec.ondataavailable = e => {
+  rec_raw = new MediaRecorder(stream);
+  rec_raw.ondataavailable = e => {
     audioChunks.push(e.data);
-    if (rec.state == "inactive"){
+    if (rec_raw.state == "inactive"){
       let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
       recordedAudio.src = URL.createObjectURL(blob);
       recordedAudio.controls=true;
@@ -82,6 +82,20 @@ function visualize(stream) {
       audioDownload.innerHTML = 'download';
     }
   }
+  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "javascripts/"});
+  rec_filtered.ondataavailable = e => {
+    audioChunks.push(e.data);
+    if (rec_filtered.state == "inactive"){
+      let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
+      recordedAudio.src = URL.createObjectURL(blob);
+      recordedAudio.controls=true;
+      recordedAudio.autoplay=true;
+      audioDownload.href = recordedAudio.src;
+      audioDownload.download = 'myrecording_filtered.ogg';
+      audioDownload.innerHTML = 'download';
+    }
+  }
+
   draw();
 
   function draw() {
