@@ -69,7 +69,7 @@ function visualize(stream) {
   source.connect(iirfilter);
   iirfilter.connect(gainNode);
   gainNode.connect(analyser);
-  rec = new MediaRecorder(gainNode);
+  rec = new MediaRecorder(stream);
   rec.ondataavailable = e => {
     audioChunks.push(e.data);
     if (rec.state == "inactive"){
@@ -137,7 +137,7 @@ function gotStream(stream) {
   window.stream = stream; // make stream available to console
   
   visualize(stream);
-  
+
   // rec_old = new MediaRecorder(stream);
   // rec.ondataavailable = e => {
   //   audioChunks.push(e.data);
