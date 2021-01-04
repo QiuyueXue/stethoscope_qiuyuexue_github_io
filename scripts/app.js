@@ -84,7 +84,7 @@ function visualize(stream) {
       audioDownload.innerHTML = 'download';
     }
   }
-  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/"});
+  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/lib/"});
   rec_filtered.ondataavailable = e => {
     audioChunks.push(e.data);
     if (rec_filtered.state == "inactive"){
