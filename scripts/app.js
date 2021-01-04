@@ -201,7 +201,7 @@ stopRecord.onclick = e => {
   startRecord.disabled = false;
   stopRecord.disabled=true;
   rec_raw.stop();
-  rec_filtered.stopRecording();
+  rec_filtered.finishRecording();
 }
 
 navigator.mediaDevices.enumerateDevices()
