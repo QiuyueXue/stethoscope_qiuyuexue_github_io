@@ -194,12 +194,14 @@ startRecord.onclick = e => {
   startRecord.disabled = true;
   stopRecord.disabled=false;
   audioChunks = [];
-  rec.start();
+  rec_raw.start();
+  rec_filtered.startRecording();
 }
 stopRecord.onclick = e => {
   startRecord.disabled = false;
   stopRecord.disabled=true;
-  rec.stop();
+  rec_raw.stop();
+  rec_filtered.stopRecording();
 }
 
 navigator.mediaDevices.enumerateDevices()
