@@ -6,6 +6,8 @@ const amplitudeCanvas = document.querySelector('.visualizer');
 const mainSection = document.querySelector('.main-controls');
 let audioCtx;
 const amplitudeCanvasCtx = amplitudeCanvas.getContext("2d");
+var rec_raw;
+var rec_filtered;
 
 
 const audioInputSelect = document.querySelector('select#audioSource');
@@ -70,34 +72,25 @@ function visualize(stream) {
   iirfilter.connect(gainNode);
   gainNode.connect(analyser);
 
+  // rec_raw = new MediaRecorder(stream);
+  // rec_raw.ondataavailable = e => {
+  //   audioChunks.push(e.data);
+  //   if (rec_raw.state == "inactive"){
+  //     let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
+  //     recordedAudio.src = URL.createObjectURL(blob);
+  //     recordedAudio.controls=true;
+  //     recordedAudio.autoplay=true;
+  //     audioDownload.href = recordedAudio.src;
+  //     audioDownload.download = 'myrecording.ogg';
+  //     audioDownload.innerHTML = 'download';
+  //   }
+  // }
 
-  rec_raw = new MediaRecorder(stream);
-  rec_raw.ondataavailable = e => {
-    audioChunks.push(e.data);
-    if (rec_raw.state == "inactive"){
-      let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
-      recordedAudio.src = URL.createObjectURL(blob);
-      recordedAudio.controls=true;
-      recordedAudio.autoplay=true;
-      audioDownload.href = recordedAudio.src;
-      audioDownload.download = 'myrecording.ogg';
-      audioDownload.innerHTML = 'download';
-    }
+  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/lib/", encoding: encodingType, numChannels: 2});
+  rec_filtered.onComplete = function(recorder, blob) { 
+      __log("Encoding complete");
+      createDownloadLink(blob,recorder.encoding)
   }
-  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/lib/"});
-  rec_filtered.ondataavailable = e => {
-    audioChunks.push(e.data);
-    if (rec_filtered.state == "inactive"){
-      let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
-      recordedAudio.src = URL.createObjectURL(blob);
-      recordedAudio.controls=true;
-      recordedAudio.autoplay=true;
-      audioDownload.href = recordedAudio.src;
-      audioDownload.download = 'myrecording_filtered.ogg';
-      audioDownload.innerHTML = 'download';
-    }
-  }
-
   draw();
 
   function draw() {
@@ -153,20 +146,6 @@ function gotStream(stream) {
   window.stream = stream; // make stream available to console
   
   visualize(stream);
-
-  // rec_old = new MediaRecorder(stream);
-  // rec.ondataavailable = e => {
-  //   audioChunks.push(e.data);
-  //   if (rec.state == "inactive"){
-  //     let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
-  //     recordedAudio.src = URL.createObjectURL(blob);
-  //     recordedAudio.controls=true;
-  //     recordedAudio.autoplay=true;
-  //     audioDownload.href = recordedAudio.src;
-  //     audioDownload.download = 'myrecording.ogg';
-  //     audioDownload.innerHTML = 'download';
-  //   }
-  // }
 }
 
 function handleError(error) {
@@ -188,19 +167,42 @@ function start() {
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream).catch(handleError);
 }
 
+function createDownloadLink(blob,encoding) {
+  
+  var url = URL.createObjectURL(blob);
+  var au = document.createElement('audio');
+  var li = document.createElement('li');
+  var link = document.createElement('a');
+
+  //add controls to the <audio> element
+  au.controls = true;
+  au.src = url;
+
+  //link the a element to the blob
+  link.href = url;
+  link.download = new Date().toISOString() + '.'+encoding;
+  link.innerHTML = link.download;
+
+  //add the new audio and a elements to the li element
+  li.appendChild(au);
+  li.appendChild(link);
+
+  //add the li element to the ordered list
+  recordingsList.appendChild(li);
+}
+
+
 audioInputSelect.onchange = start;
   
 startRecord.onclick = e => {
   startRecord.disabled = true;
   stopRecord.disabled=false;
   audioChunks = [];
-  rec_raw.start();
   rec_filtered.startRecording();
 }
 stopRecord.onclick = e => {
   startRecord.disabled = false;
-  stopRecord.disabled=true;
-  rec_raw.stop();
+  stopRecord.disabled=true;  
   rec_filtered.finishRecording();
 }
 
