@@ -69,6 +69,8 @@ function visualize(stream) {
   source.connect(iirfilter);
   iirfilter.connect(gainNode);
   gainNode.connect(analyser);
+
+
   rec_raw = new MediaRecorder(stream);
   rec_raw.ondataavailable = e => {
     audioChunks.push(e.data);
@@ -82,7 +84,7 @@ function visualize(stream) {
       audioDownload.innerHTML = 'download';
     }
   }
-  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "javascripts/"});
+  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/"});
   rec_filtered.ondataavailable = e => {
     audioChunks.push(e.data);
     if (rec_filtered.state == "inactive"){
