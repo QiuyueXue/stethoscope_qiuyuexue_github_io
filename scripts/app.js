@@ -84,6 +84,7 @@ function visualize(stream) {
 
   rec_raw.setOptions({
       timeLimit:120,
+      bufferSize: 2000,
       encodeAfterRecord:true,
         ogg: {quality: 0.5},
         mp3: {bitRate: 160}
@@ -91,6 +92,7 @@ function visualize(stream) {
 
   rec_filtered.setOptions({
       timeLimit:120,
+      bufferSize: 2000,
       encodeAfterRecord:true,
         ogg: {quality: 0.5},
         mp3: {bitRate: 160}
