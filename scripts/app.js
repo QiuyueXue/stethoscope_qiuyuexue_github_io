@@ -181,11 +181,13 @@ startRecord.onclick = e => {
   startRecord.disabled = true;
   stopRecord.disabled=false;
   audioChunks = [];
+  rec_raw.startRecording();
   rec_filtered.startRecording();
 }
 stopRecord.onclick = e => {
   startRecord.disabled = false;
-  stopRecord.disabled=true;  
+  stopRecord.disabled=true;
+  rec_raw.finishRecording();
   rec_filtered.finishRecording();
 }
 
