@@ -81,6 +81,22 @@ function visualize(stream) {
   rec_filtered.onComplete = function(recorder, blob) {
       createDownloadLink(blob,recorder.encoding, "filtered")
   }
+
+  rec_raw.setOptions({
+      timeLimit:120,
+      encodeAfterRecord:encodeAfterRecord,
+        ogg: {quality: 0.5},
+        mp3: {bitRate: 160}
+      });
+
+  rec_filtered.setOptions({
+      timeLimit:120,
+      encodeAfterRecord:encodeAfterRecord,
+        ogg: {quality: 0.5},
+        mp3: {bitRate: 160}
+      });
+
+
   draw();
 
   function draw() {
