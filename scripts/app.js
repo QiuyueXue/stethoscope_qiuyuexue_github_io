@@ -72,23 +72,14 @@ function visualize(stream) {
   iirfilter.connect(gainNode);
   gainNode.connect(analyser);
 
-  // rec_raw = new MediaRecorder(stream);
-  // rec_raw.ondataavailable = e => {
-  //   audioChunks.push(e.data);
-  //   if (rec_raw.state == "inactive"){
-  //     let blob = new Blob(audioChunks,{'type':'audio/ogg; codecs=opus'});
-  //     recordedAudio.src = URL.createObjectURL(blob);
-  //     recordedAudio.controls=true;
-  //     recordedAudio.autoplay=true;
-  //     audioDownload.href = recordedAudio.src;
-  //     audioDownload.download = 'myrecording.ogg';
-  //     audioDownload.innerHTML = 'download';
-  //   }
-  // }
+  rec_raw = new WebAudioRecorder(source, {workerDir: "scripts/lib/", encoding: "wav", numChannels: 2});
+  rec_raw.onComplete = function(recorder, blob) {
+      createDownloadLink(blob,recorder.encoding, "raw")
+  }
 
   rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/lib/", encoding: "wav", numChannels: 2});
   rec_filtered.onComplete = function(recorder, blob) {
-      createDownloadLink(blob,recorder.encoding)
+      createDownloadLink(blob,recorder.encoding, "filtered")
   }
   draw();
 
@@ -166,29 +157,22 @@ function start() {
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream).catch(handleError);
 }
 
-function createDownloadLink(blob,encoding) {
+function createDownloadLink(blob,encoding,raw_or_filtered) {
   
   var url = URL.createObjectURL(blob);
   var au = document.createElement('audio');
   var li = document.createElement('li');
   var link = document.createElement('a');
-
-  //add controls to the <audio> element
   au.controls = true;
   au.src = url;
-
-  //link the a element to the blob
   link.href = url;
-  link.download = new Date().toISOString() + '.'+encoding;
+  link.download = new Date().toISOString() + '_' + raw_or_filtered + '.'+encoding;
   link.innerHTML = link.download;
-
-  //add the new audio and a elements to the li element
   li.appendChild(au);
   li.appendChild(link);
-
-  //add the li element to the ordered list
   recordingsList.appendChild(li);
 }
+
 
 
 audioInputSelect.onchange = start;
