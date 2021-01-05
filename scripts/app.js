@@ -84,14 +84,14 @@ function visualize(stream) {
 
   rec_raw.setOptions({
       timeLimit:120,
-      encodeAfterRecord:encodeAfterRecord,
+      encodeAfterRecord:true,
         ogg: {quality: 0.5},
         mp3: {bitRate: 160}
       });
 
   rec_filtered.setOptions({
       timeLimit:120,
-      encodeAfterRecord:encodeAfterRecord,
+      encodeAfterRecord:true,
         ogg: {quality: 0.5},
         mp3: {bitRate: 160}
       });
