@@ -83,7 +83,7 @@ function visualize(stream) {
   }
 
   rec_raw.setOptions({
-      timeLimit:120,
+      timeLimit:60,
       bufferSize: 16384,
       encodeAfterRecord:true,
         ogg: {quality: 0.5},
@@ -91,7 +91,7 @@ function visualize(stream) {
       });
 
   rec_filtered.setOptions({
-      timeLimit:120,
+      timeLimit:60,
       bufferSize: 16384,
       encodeAfterRecord:true,
         ogg: {quality: 0.5},
