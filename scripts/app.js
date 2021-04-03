@@ -49,7 +49,7 @@ function visualize(stream) {
   const iirfilter = audioCtx.createIIRFilter(feedforward=feedForward, feedback=feedBack);
   var gainNode = audioCtx.createGain();
   gainNode.gain.value = 1E-05;
-  var max_amplification = 5E-04;
+  var max_amplification = 5E-03;
 
   analyser.fftSize = 2048;
   let amplitudeBufferLength = analyser.fftSize;
@@ -84,7 +84,7 @@ function visualize(stream) {
 
   rec_raw.setOptions({
       timeLimit:120,
-      bufferSize: 16384,
+      bufferSize: 65536,
       encodeAfterRecord:true,
         ogg: {quality: 0.5},
         mp3: {bitRate: 160}
@@ -92,7 +92,7 @@ function visualize(stream) {
 
   rec_filtered.setOptions({
       timeLimit:120,
-      bufferSize: 16384,
+      bufferSize: 65536,
       encodeAfterRecord:true,
         ogg: {quality: 0.5},
         mp3: {bitRate: 160}
