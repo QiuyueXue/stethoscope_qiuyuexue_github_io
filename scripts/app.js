@@ -169,7 +169,8 @@ function start() {
   const audioSource = audioInputSelect.value;
   
   const constraints = {
-    audio: {deviceId: audioSource ? {exact: audioSource} : undefined}
+    audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
+    noiseSuppression: false
   };
   
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream).catch(handleError);
