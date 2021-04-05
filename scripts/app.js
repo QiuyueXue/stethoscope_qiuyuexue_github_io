@@ -13,6 +13,9 @@ var rec_filtered;
 const audioInputSelect = document.querySelector('select#audioSource');
 const selectors = [audioInputSelect];
 
+let supports = navigator.mediaDevices.getSupportedConstraints();
+
+
 function gotDevices(deviceInfos) {
   // Handles being called several times to update labels. Preserve values.
   const values = selectors.map(select => select.value);
@@ -169,8 +172,12 @@ function start() {
   const audioSource = audioInputSelect.value;
   
   const constraints = {
-    audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
-    noiseSuppression: false
+    audio: {
+      deviceId: audioSource ? {exact: audioSource} : undefined
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+    }
   };
   
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream).catch(handleError);
