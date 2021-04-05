@@ -14,7 +14,15 @@ const audioInputSelect = document.querySelector('select#audioSource');
 const selectors = [audioInputSelect];
 
 let supports = navigator.mediaDevices.getSupportedConstraints();
-document.write(supports);
+var strBuilder = [];
+for(key in supports) {
+  if (supports.hasOwnProperty(key)) {
+    strBuilder.push("Key is " + key + ", value is " + supports[key] + "\n");
+  }
+}
+// alert(strBuilder.join(""));
+
+document.write(strBuilder);
 
 function gotDevices(deviceInfos) {
   // Handles being called several times to update labels. Preserve values.
