@@ -14,7 +14,7 @@ const audioInputSelect = document.querySelector('select#audioSource');
 const selectors = [audioInputSelect];
 
 let supports = navigator.mediaDevices.getSupportedConstraints();
-
+document.write(supports);
 
 function gotDevices(deviceInfos) {
   // Handles being called several times to update labels. Preserve values.
@@ -175,7 +175,7 @@ function start() {
     audio: {
       deviceId: audioSource ? {exact: audioSource} : undefined,
       echoCancellation: false,
-      noiseSuppression: false,
+      noiseSuppression: true,
       autoGainControl: true,
     }
   };
