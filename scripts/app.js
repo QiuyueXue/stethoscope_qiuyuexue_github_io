@@ -174,8 +174,8 @@ function start() {
   const constraints = {
     audio: {
       deviceId: audioSource ? {exact: audioSource} : undefined,
-      echoCancellation: true,
-      noiseSuppression: true,
+      echoCancellation: false,
+      noiseSuppression: false,
       autoGainControl: true,
     }
   };
