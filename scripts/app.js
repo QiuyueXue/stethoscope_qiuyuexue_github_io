@@ -176,7 +176,7 @@ function start() {
       deviceId: audioSource ? {exact: audioSource} : undefined,
       echoCancellation: false,
       noiseSuppression: false,
-      autoGainControl: false,
+      autoGainControl: true,
     }
   };
   
