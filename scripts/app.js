@@ -173,9 +173,8 @@ function start() {
   const constraints = {
     audio: {
       deviceId: audioSource ? {exact: audioSource} : undefined,
-      echoCancellation: false,
-      noiseSuppression: true,
-      autoGainControl: true,
+      echoCancellation: true,
+      noiseSuppression: true
     }
   };
   
@@ -223,13 +222,13 @@ navigator.mediaDevices.enumerateDevices()
 .catch(handleError);
 
 
-let supports = navigator.mediaDevices.getSupportedConstraints();
-var strBuilder = [];
-for(key in supports) {
-  if (supports.hasOwnProperty(key)) {
-    strBuilder.push("Key is " + key + ", value is " + supports[key] + ", \n");
-  }
-}
-document.write(strBuilder);
+// let supports = navigator.mediaDevices.getSupportedConstraints();
+// var strBuilder = [];
+// for(key in supports) {
+//   if (supports.hasOwnProperty(key)) {
+//     strBuilder.push("Key is " + key + ", value is " + supports[key] + ", \n");
+//   }
+// }
+// document.write(strBuilder);
 
 
