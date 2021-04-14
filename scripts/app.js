@@ -13,6 +13,11 @@ var rec_filtered;
 const audioInputSelect = document.querySelector('select#audioSource');
 const selectors = [audioInputSelect];
 
+var test_ver_ = document.getElementById("test_ver");
+var test_ver_str = test_ver_.options[test_ver_.selectedIndex].text;
+
+var repeat_num_ = document.getElementById("repeat_num");
+var repeat_num_str = repeat_num_.options[repeat_num_.selectedIndex].text;
 
 
 function gotDevices(deviceInfos) {
@@ -191,7 +196,7 @@ function createDownloadLink(blob,encoding,raw_or_filtered) {
   au.controls = true;
   au.src = url;
   link.href = url;
-  link.download = new Date().toISOString() + '_' + raw_or_filtered + '.'+encoding;
+  link.download = new test_ver_str + '_' + repeat_num_str +'_' + Date().toISOString() + '_' + raw_or_filtered + '.'+encoding;
   link.innerHTML = link.download;
   li.appendChild(au);
   li.appendChild(link);
@@ -220,15 +225,5 @@ navigator.mediaDevices.enumerateDevices()
 .then(gotDevices)
 .then(start)
 .catch(handleError);
-
-
-// let supports = navigator.mediaDevices.getSupportedConstraints();
-// var strBuilder = [];
-// for(key in supports) {
-//   if (supports.hasOwnProperty(key)) {
-//     strBuilder.push("Key is " + key + ", value is " + supports[key] + ", \n");
-//   }
-// }
-// document.write(strBuilder);
 
 
