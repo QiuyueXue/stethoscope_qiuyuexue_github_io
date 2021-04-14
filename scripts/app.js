@@ -196,7 +196,7 @@ function createDownloadLink(blob,encoding,raw_or_filtered) {
   au.controls = true;
   au.src = url;
   link.href = url;
-  link.download = new test_ver_str + '_' + repeat_num_str +'_' + Date().toISOString() + '_' + raw_or_filtered + '.'+encoding;
+  link.download = new Date().toISOString() + '_' +test_ver_str + '_' + repeat_num_str +'_' + raw_or_filtered + '.'+encoding;
   link.innerHTML = link.download;
   li.appendChild(au);
   li.appendChild(link);
