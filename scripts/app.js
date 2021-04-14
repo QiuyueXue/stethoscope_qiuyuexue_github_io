@@ -86,7 +86,7 @@ function visualize(stream) {
   // }
 
   rec_raw.setOptions({
-      timeLimit:60,
+      timeLimit:120,
       bufferSize: 8192,
       encodeAfterRecord:true,
         ogg: {quality: 0.5},
