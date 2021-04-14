@@ -13,11 +13,7 @@ var rec_filtered;
 const audioInputSelect = document.querySelector('select#audioSource');
 const selectors = [audioInputSelect];
 
-var test_ver_ = document.getElementById("test_ver");
-var test_ver_str = test_ver_.options[test_ver_.selectedIndex].text;
 
-var repeat_num_ = document.getElementById("repeat_num");
-var repeat_num_str = repeat_num_.options[repeat_num_.selectedIndex].text;
 
 
 function gotDevices(deviceInfos) {
@@ -193,6 +189,11 @@ function createDownloadLink(blob,encoding,raw_or_filtered) {
   var au = document.createElement('audio');
   var li = document.createElement('li');
   var link = document.createElement('a');
+  var test_ver_ = document.getElementById("test_ver");
+  var test_ver_str = test_ver_.options[test_ver_.selectedIndex].text;
+
+  var repeat_num_ = document.getElementById("repeat_num");
+  var repeat_num_str = repeat_num_.options[repeat_num_.selectedIndex].text;
   au.controls = true;
   au.src = url;
   link.href = url;
