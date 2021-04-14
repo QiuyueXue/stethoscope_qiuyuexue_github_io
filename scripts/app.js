@@ -80,26 +80,26 @@ function visualize(stream) {
       createDownloadLink(blob,recorder.encoding, "raw")
   }
 
-  rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/lib/", encoding: "wav", numChannels: 2});
-  rec_filtered.onComplete = function(recorder, blob) {
-      createDownloadLink(blob,recorder.encoding, "filtered")
-  }
+  // rec_filtered = new WebAudioRecorder(gainNode, {workerDir: "scripts/lib/", encoding: "wav", numChannels: 2});
+  // rec_filtered.onComplete = function(recorder, blob) {
+  //     createDownloadLink(blob,recorder.encoding, "filtered")
+  // }
 
   rec_raw.setOptions({
-      timeLimit:120,
+      timeLimit:60,
       bufferSize: 8192,
       encodeAfterRecord:true,
         ogg: {quality: 0.5},
         mp3: {bitRate: 160}
       });
 
-  rec_filtered.setOptions({
-      timeLimit:120,
-      bufferSize: 8192,
-      encodeAfterRecord:true,
-        ogg: {quality: 0.5},
-        mp3: {bitRate: 160}
-      });
+  // rec_filtered.setOptions({
+  //     timeLimit:60,
+  //     bufferSize: 8192,
+  //     encodeAfterRecord:true,
+  //       ogg: {quality: 0.5},
+  //       mp3: {bitRate: 160}
+  //     });
 
 
   draw();
@@ -213,13 +213,13 @@ startRecord.onclick = e => {
   stopRecord.disabled=false;
   audioChunks = [];
   rec_raw.startRecording();
-  rec_filtered.startRecording();
+  // rec_filtered.startRecording();
 }
 stopRecord.onclick = e => {
   startRecord.disabled = false;
   stopRecord.disabled=true;
   rec_raw.finishRecording();
-  rec_filtered.finishRecording();
+  // rec_filtered.finishRecording();
 }
 
 navigator.mediaDevices.enumerateDevices()
