@@ -115,6 +115,7 @@ function visualize(stream) {
     graphWindowStart = (graphWindowStart + amplitudeBufferLength) % GRAPH_WINDOW_LENGTH;
 
     drawAmplitudeGraph();
+    compute_peaks();
     // drawFrequencyGraph();
     max_amplitude = Math.max.apply(Math, amplitudeData);
     document.getElementById('volume').addEventListener('change', function() {
@@ -151,11 +152,15 @@ function visualize(stream) {
     amplitudeCanvasCtx.lineTo(amplitudeCanvas.width, amplitudeCanvas.height/2);
     amplitudeCanvasCtx.stroke();
   }
+
+  function compute_peaks(){
+    var findPeaks = d3_peaks.findPeaks().gapThreshold(3000);
+    console.log(findPeaks);
+  }
 }
 
 function gotStream(stream) {
   window.stream = stream; // make stream available to console
-  
   visualize(stream);
 }
 
