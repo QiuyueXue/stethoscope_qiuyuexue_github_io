@@ -157,10 +157,7 @@ function visualize(stream) {
     var ricker = d3_peaks.ricker;
     var findPeaks = d3_peaks.findPeaks()
       .kernel(ricker)
-      .gapThreshold(1)
-      .minLineLength(2)
-      .minSNR(1.0)
-      .widths([1,2,3]);
+      .gapThreshold(4000)
     var peaks = findPeaks(graphWindowData);
     console.log(peaks);
   }
