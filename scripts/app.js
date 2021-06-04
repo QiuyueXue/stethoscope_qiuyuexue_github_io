@@ -154,8 +154,15 @@ function visualize(stream) {
   }
 
   function compute_peaks(){
-    var findPeaks = d3_peaks.findPeaks().gapThreshold(3000);
-    console.log(findPeaks);
+    var ricker = d3_peaks.ricker;
+    var findPeaks = d3_peaks.findPeaks()
+      .kernel(ricker)
+      .gapThreshold(1)
+      .minLineLength(2)
+      .minSNR(1.0)
+      .widths([1,2,3]);
+    var peaks = findPeaks(graphWindowData);
+    console.log(peaks);
   }
 }
 
