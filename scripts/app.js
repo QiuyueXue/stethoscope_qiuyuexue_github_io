@@ -170,14 +170,14 @@ function visualize(stream) {
     var threshold = 0.4*Math.max.apply(null, data);
     console.log(threshold);
     var peaksArray = [];
-    var length = data.length;
-    for (var i = 0; i < length;) {
+    // var length = data.length;
+    for (var i = 0; i < data.length;) {
       if (data[i] > threshold) {
         peaksArray.push(i);
         // Skip forward ~ 1/4s to get past this peak.
-        i += 10000;
+        i += 8000;
       }
-      i++;
+      i += 100;
     }
     return peaksArray;
   }
