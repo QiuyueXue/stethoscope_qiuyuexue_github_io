@@ -166,7 +166,7 @@ function visualize(stream) {
     // console.log(intervalCounts);
   }
   function getPeaksAtThreshold(data) {
-    var threshold = 0.1*Math.max(graphWindowData);
+    var threshold = 0.1*Math.max.apply(null, data);
     console.log(threshold);
     var peaksArray = [];
     var length = data.length;
