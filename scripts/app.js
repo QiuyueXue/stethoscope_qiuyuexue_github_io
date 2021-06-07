@@ -155,7 +155,7 @@ function visualize(stream) {
 
   function compute_peaks(){
     var peaks = getPeaksAtThreshold(graphWindowData);
-    var intervalCounts = countIntervalsBetweenNearbyPeaks(peaks);
+    // var intervalCounts = countIntervalsBetweenNearbyPeaks(peaks);
 
     // var ricker = d3_peaks.ricker;
     // var findPeaks = d3_peaks.findPeaks()
@@ -163,10 +163,11 @@ function visualize(stream) {
     //   .gapThreshold(4000)
     // var peaks = findPeaks(graphWindowData);
     console.log(peaks);
+    console.log(peaks.length)
     // console.log(intervalCounts);
   }
   function getPeaksAtThreshold(data) {
-    var threshold = 0.1*Math.max.apply(null, data);
+    var threshold = 0.4*Math.max.apply(null, data);
     console.log(threshold);
     var peaksArray = [];
     var length = data.length;
