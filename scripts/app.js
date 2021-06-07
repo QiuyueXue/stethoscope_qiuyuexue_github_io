@@ -65,7 +65,7 @@ function visualize(stream) {
   amplitudeCanvas.width  = amplitudeCanvas.offsetWidth;
   const amplitudeCanvasCtx = amplitudeCanvas.getContext('2d');
   
-  const GRAPH_WINDOW_LENGTH = 120000;
+  const GRAPH_WINDOW_LENGTH = 144000;
   let graphWindowData = new Uint8Array(GRAPH_WINDOW_LENGTH);
   let graphWindowStart = 0;
 
@@ -163,7 +163,9 @@ function visualize(stream) {
     //   .gapThreshold(4000)
     // var peaks = findPeaks(graphWindowData);
     console.log(peaks);
-    console.log(peaks.length)
+    console.log(peaks.length);
+    var heart_rate = peaks.length*20/2;
+    document.getElementById("heart_rate").innerHTML = heart_rate;
     // console.log(intervalCounts);
   }
   function getPeaksAtThreshold(data) {
