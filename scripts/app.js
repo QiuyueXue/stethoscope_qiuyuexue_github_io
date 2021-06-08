@@ -151,6 +151,7 @@ function visualize(stream) {
     amplitudeCanvasCtx.lineTo(amplitudeCanvas.width, amplitudeCanvas.height/2);
     amplitudeCanvasCtx.stroke();
   }
+}
 
 
 
