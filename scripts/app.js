@@ -115,7 +115,6 @@ function visualize(stream) {
     graphWindowStart = (graphWindowStart + amplitudeBufferLength) % GRAPH_WINDOW_LENGTH;
 
     drawAmplitudeGraph();
-    compute_peaks();
     // drawFrequencyGraph();
     max_amplitude = Math.max.apply(Math, amplitudeData);
     document.getElementById('volume').addEventListener('change', function() {
@@ -153,58 +152,7 @@ function visualize(stream) {
     amplitudeCanvasCtx.stroke();
   }
 
-  function compute_peaks(){
-    var peaks = getPeaksAtThreshold(graphWindowData);
-    // var intervalCounts = countIntervalsBetweenNearbyPeaks(peaks);
 
-    // var ricker = d3_peaks.ricker;
-    // var findPeaks = d3_peaks.findPeaks()
-    //   .kernel(ricker)
-    //   .gapThreshold(4000)
-    // var peaks = findPeaks(graphWindowData);
-    console.log(peaks);
-    console.log(peaks.length);
-    var heart_rate = peaks.length*48000*60/(2*GRAPH_WINDOW_LENGTH);
-    document.getElementById("heart_rate").innerHTML = heart_rate;
-    // console.log(intervalCounts);
-  }
-  function getPeaksAtThreshold(data) {
-    var threshold = 0.8*Math.max.apply(null, data);
-    console.log(Math.max.apply(null, data));
-    console.log(threshold);
-    var peaksArray = [];
-    // var length = data.length;
-    for (var i = 0; i < data.length;) {
-      if (data[i] > threshold) {
-        peaksArray.push(i);
-        // Skip forward ~ 1/4s to get past this peak.
-        i += 8000;
-      }
-      i += 100;
-    }
-    return peaksArray;
-  }
-  function countIntervalsBetweenNearbyPeaks(peaks) {
-  var intervalCounts = [];
-  peaks.forEach(function(peak, index) {
-    for (var i = 0; i < 10; i++) {
-      var interval = peaks[index + i] - peak;
-      var foundInterval = intervalCounts.some(function(intervalCount) {
-        if (intervalCount.interval === interval) return intervalCount.count++;
-      });
-      //Additional checks to avoid infinite loops in later processing
-      if (!isNaN(interval) && interval !== 0 && !foundInterval) {
-        intervalCounts.push({
-          interval: interval,
-          count: 1
-        });
-      }
-    }
-  });
-  return intervalCounts;
-}
-
-}
 
 function gotStream(stream) {
   window.stream = stream; // make stream available to console
