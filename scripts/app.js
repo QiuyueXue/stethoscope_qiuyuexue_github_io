@@ -52,7 +52,7 @@ function visualize(stream) {
   const iirfilter = audioCtx.createIIRFilter(feedforward=feedForward, feedback=feedBack);
   var gainNode = audioCtx.createGain();
   gainNode.gain.value = 1E-05;
-  var max_amplification = 1E-03;
+  var max_amplification = 5E-03;
 
   analyser.fftSize = 2048;
   let amplitudeBufferLength = analyser.fftSize;
@@ -116,7 +116,7 @@ function visualize(stream) {
 
     drawAmplitudeGraph();
     // drawFrequencyGraph();
-    max_amplitude = Math.max.apply(null, amplitudeData);
+    max_amplitude = Math.max.apply(Math, amplitudeData);
     document.getElementById('volume').addEventListener('change', function() {
         max_amplification = this.value;
     });
